@@ -24,14 +24,22 @@ class SessionController {
 
     const user = await User.findOne({
       where: {
-        email,
+        email
       },
     });
 
-    if (!user) {
-      return emailOrPasswordIncorrect();
+    if (!user || !user.name) {
+      return response.status(400).json({ 
+        error: 'Dados do usuário incompletos ou inválidos' 
+      });
     }
 
+    console.log('Dados do usuário para geração do token:', {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    });
+    
     const isSamePassword = await user.checkPassword(password);
 
     if (!isSamePassword) {
@@ -43,7 +51,7 @@ class SessionController {
       name: user.name,
       email,
       admin: user.admin,
-      token: jwt.sign({ id: user.id, user: user.name }, authConfig.secret, {
+      token: jwt.sign({ id: user.id, name: user.name }, authConfig.secret, {
         expiresIn: authConfig.expiresIn,
       }),
     });

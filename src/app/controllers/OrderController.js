@@ -7,13 +7,13 @@ class OrderController {
   async store(request, response) {
     const schema = Yup.object({
       products: Yup.array()
-      .required()
-      .of(
-        Yup.object({          
+        .required()
+        .of(
+          Yup.object({
             id: Yup.number().required(),
             quantity: Yup.number().required(),
           }),
-      ),
+        ),
     });
 
     try {
@@ -66,6 +66,12 @@ class OrderController {
     const createdOrder = await Order.create(order);
 
     return response.status(201).json(createdOrder);
+  }
+
+  async index(request, response) {
+    const orders = await Order.findAll();
+
+    return response.json(orders);
   }
 }
 
